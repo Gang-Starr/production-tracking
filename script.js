@@ -3,6 +3,7 @@ const LEGACY_STORAGE_KEY = 'productionEntries.v1';
 const CSV_HEADER = ['Datum','Projekt','Bauteil','Maschine','Zielmenge pro Tag','Produzierte Stückzahl','Ausschuss','Geplante Produktionszeit in Minuten','Maschinenstillstand in Minuten','Ideale Taktzeit je Stück in Sekunden','Kommentar'];
 const requiredNumberFields = ['target','produced','scrap'];
 const oeeNumberFields = ['plannedTime','downtime','cycleTime'];
+const NA_LABEL = 'n/a';
 const charts = {
   good: document.querySelector('#good-chart'), target: document.querySelector('#target-chart'), scrap: document.querySelector('#scrap-chart'),
   oee: document.querySelector('#oee-chart'), oeeParts: document.querySelector('#oee-parts-chart'), cumulative: document.querySelector('#cumulative-deviation-chart')
@@ -188,10 +189,10 @@ function today() { return new Date().toISOString().slice(0, 10); }
 function formatDate(date) { return date ? new Intl.DateTimeFormat('de-DE').format(new Date(`${date}T00:00:00`)) : '-'; }
 function formatNumber(number) { return new Intl.NumberFormat('de-DE', { maximumFractionDigits: 1 }).format(number || 0); }
 function formatOptionalNumber(number) { return isCalculable(number) ? formatNumber(number) : formatNa(); }
-function formatPercent(value) { return isCalculable(value) ? `${value.toFixed(1)} %` : 'n/a'; }
+function formatPercent(value) { return isCalculable(value) ? `${value.toFixed(1)} %` : NA_LABEL; }
 function formatOeePercent(value) { return isCalculable(value) ? `${value.toFixed(1)} %` : formatNa(); }
-function formatNa() { return '<span class="na-value">n/a</span>'; }
-function setKpiText(selector, value) { const element = document.querySelector(selector); element.textContent = value; element.classList.toggle('na-value', value === 'n/a'); }
+function formatNa() { return `<span class="na-value">${NA_LABEL}</span>`; }
+function setKpiText(selector, value) { const element = document.querySelector(selector); element.textContent = value; element.classList.toggle('na-value', value === NA_LABEL); }
 function csvEscape(value) { return `"${String(value ?? '').replaceAll('"', '""')}"`; }
 function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c])); }
 function emptyState(text) { return `<div class="summary-item"><span>${text}</span></div>`; }
