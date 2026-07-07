@@ -85,6 +85,14 @@ Gelöschte Stammdatenwerte werden separat in `localStorage` gemerkt. Dadurch wer
 
 Projektliste, Bauteilliste, Maschinenliste, gelöschte Stammdatenwerte, Änderungsdatum und Produktionsdaten werden in `localStorage` gespeichert. Der Button **„Alle Daten löschen“** entfernt Produktionsdaten, Projekt-, Bauteil- und Maschinen-Stammdaten, gelöschte Stammdatenwerte und setzt die Filterauswahl zurück; danach ist die App wieder komplett leer. Beim Laden prüft die App vorhandene Produktionsdaten automatisch und übernimmt darin enthaltene Projekt-, Bauteil- und Maschinenwerte in die passenden Stammdatenlisten, sofern sie dort noch nicht vorhanden und nicht zuvor bewusst gelöscht wurden. Alle Daten bleiben lokal im Browserprofil des genutzten Geräts.
 
+## Gefahrenbereich und sicherer App-Reset
+
+Am Ende der App befindet sich ein deutlich abgesetzter Bereich **„Gefahrenbereich“** / **“Danger zone”**. Dort können Nutzer einer älteren App-Version über **„App zurücksetzen“** / **“Reset app”** alte lokale Browserdaten löschen. Die Funktion ist bewusst nicht im normalen Bereich **„Daten verwalten“** platziert, sondern ganz unten auf der Seite.
+
+Die App speichert Produktionsdaten, Projekt-Stammdaten, Bauteil-Stammdaten, Maschinen-Stammdaten, gelöschte oder archivierte Stammdatenwerte und weitere app-spezifische Zustände lokal im `localStorage` dieses Browsers. Der Reset löscht alle lokalen App-Daten dieses Browsers, darunter Produktionsdaten, Stammdaten, gelöschte Stammdatenwerte, Filterzustände, Formularwerte, gespeicherte CSV-Importzustände und alle app-spezifischen `localStorage`-Keys. Die gewählte Sprache kann erhalten bleiben, damit die Oberfläche nach dem Reset weiterhin in der zuletzt ausgewählten Sprache angezeigt wird.
+
+Der Reset kann nicht rückgängig gemacht werden. Zur Sicherheit öffnet der Button zuerst einen Bestätigungsdialog mit Warnhinweis. Der endgültige Löschbutton bleibt deaktiviert, bis exakt **`RESET`** eingegeben wurde. **„Abbrechen“** / **“Cancel”** schließt den Dialog ohne Datenverlust. Nach erfolgreichem Reset rendert die App sofort neu: Produktionsdaten, Projektliste, Bauteilliste und Maschinenliste sind leer, KPI-Karten stehen auf `0` oder `n/a`, Diagramme zeigen keine Daten und es werden keine Demo- oder Beispielwerte neu erzeugt.
+
 ## Optionale OEE-Daten
 
 Die OEE-Berechnung ist optional. In der Eingabemaske gibt es dafür den optisch abgesetzten Bereich **„Optionale OEE-Daten“** mit dem Hinweis:

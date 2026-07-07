@@ -145,6 +145,30 @@
     <div class="table-wrapper"><table><thead><tr><th>Ziel</th><th>OEE</th><th>Datum</th><th>Projekt</th><th>Bauteil</th><th>Maschine</th><th>Zielmenge</th><th>Produziert</th><th>Ausschuss</th><th>Gutmenge</th><th>Abweichung</th><th>Ziel %</th><th>Planzeit</th><th>Stillstand</th><th>Taktzeit</th><th>Verfüg.</th><th>Leistung</th><th>Qualität</th><th>OEE %</th><th>Kommentar</th><th>Aktion</th></tr></thead><tbody id="entries-body"></tbody></table></div>
   </section>
 
+
+  <section class="card danger-zone" aria-labelledby="danger-zone-title">
+    <div class="section-heading">
+      <h2 id="danger-zone-title" data-i18n="dangerZoneTitle">Gefahrenbereich</h2>
+    </div>
+    <p data-i18n="dangerZoneHint">Hier können alle lokal gespeicherten App-Daten dieses Browsers gelöscht werden.</p>
+    <button id="reset-app" type="button" class="reset-app-button" data-i18n="resetAppButton">App zurücksetzen</button>
+  </section>
+
+  <dialog id="reset-dialog" class="reset-dialog" aria-labelledby="reset-dialog-title">
+    <form method="dialog" class="reset-dialog-content">
+      <h2 id="reset-dialog-title" data-i18n="dangerZoneTitle">Gefahrenbereich</h2>
+      <p class="reset-warning" data-i18n="resetConfirmMessage">Möchten Sie wirklich alle lokal gespeicherten App-Daten löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.</p>
+      <label for="reset-confirm-input">
+        <span data-i18n="resetConfirmInstruction">Bitte geben Sie RESET ein, um das Löschen zu bestätigen.</span>
+        <input id="reset-confirm-input" type="text" autocomplete="off" inputmode="latin" />
+      </label>
+      <div class="reset-dialog-actions">
+        <button id="cancel-reset" type="button" class="secondary-button" data-i18n="resetCancelButton">Abbrechen</button>
+        <button id="confirm-reset" type="button" class="reset-app-button" data-i18n="resetDeleteButton" disabled>Endgültig löschen</button>
+      </div>
+    </form>
+  </dialog>
+
   <script src="script.js"></script>
 </body>
 </html>
