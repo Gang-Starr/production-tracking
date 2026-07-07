@@ -34,14 +34,14 @@ body {
   margin-top: 14px !important;
   max-width: min(850px, 100%);
   padding: 8px 12px;
-  border: 1px solid rgba(255, 255, 255, .48);
+  border: 1px solid rgba(163, 179, 199, .95);
   border-radius: 999px;
-  background: rgba(9, 30, 66, .28);
-  color: #f7fbff !important;
+  background: #f3f6fa;
+  color: #1d2733 !important;
   font-size: .88rem;
   font-weight: 700;
   line-height: 1.35;
-  box-shadow: 0 8px 24px rgba(9, 30, 66, .12);
+  box-shadow: 0 8px 24px rgba(9, 30, 66, .10);
 }
 .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-weight: 700; font-size: .8rem; }
 
