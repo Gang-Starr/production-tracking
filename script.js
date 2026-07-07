@@ -18,9 +18,11 @@ const translations = {
 };
 
 Object.assign(translations.de, {
+  validateData: 'Daten prüfen', dataValidationOk: 'Keine Auffälligkeiten gefunden.', dataValidationIssues: 'Auffälligkeiten gefunden:', entry: 'Eintrag', validationProjectMissingShort: 'Projekt vorhanden prüfen.', validationPartMissingShort: 'Bauteil vorhanden prüfen.', validationMachineMissingShort: 'Maschine vorhanden prüfen.', validationScrapNonNegative: 'Ausschuss muss größer oder gleich 0 sein.', validationOeePartial: 'OEE-Daten sind teilweise ausgefüllt. Für eine OEE-Berechnung bitte Planzeit, Stillstand und Taktzeit vollständig pflegen.',
   periodFilter: 'Zeitraum', allData: 'Alle Daten', last7Days: 'Letzte 7 Tage', last14Days: 'Letzte 14 Tage', last30Days: 'Letzte 30 Tage', currentCalendarWeek: 'Aktuelle Kalenderwoche', lastCalendarWeek: 'Letzte Kalenderwoche', customPeriod: 'Benutzerdefinierter Zeitraum', displayMode: 'Darstellung', dailyValues: 'Tageswerte', weeklyValues: 'Wochenwerte', monthlyValues: 'Monatswerte', periodFrom: 'Von', periodTo: 'Bis', chartRecommendation: 'Bei vielen Tagen empfehlen wir Wochen- oder Monatswerte für bessere Lesbarkeit.', calendarWeekShort: 'KW'
 });
 Object.assign(translations.en, {
+  validateData: 'Check data', dataValidationOk: 'No anomalies found.', dataValidationIssues: 'Anomalies found:', entry: 'Entry', validationProjectMissingShort: 'Check that a project is present.', validationPartMissingShort: 'Check that a part is present.', validationMachineMissingShort: 'Check that a machine is present.', validationScrapNonNegative: 'Scrap must be 0 or higher.', validationOeePartial: 'OEE data is partially filled in. For an OEE calculation, please complete planned time, downtime and cycle time.',
   periodFilter: 'Period', allData: 'All data', last7Days: 'Last 7 days', last14Days: 'Last 14 days', last30Days: 'Last 30 days', currentCalendarWeek: 'Current calendar week', lastCalendarWeek: 'Last calendar week', customPeriod: 'Custom date range', displayMode: 'Display', dailyValues: 'Daily values', weeklyValues: 'Weekly values', monthlyValues: 'Monthly values', periodFrom: 'From', periodTo: 'To', chartRecommendation: 'For many days, weekly or monthly values are recommended for better readability.', calendarWeekShort: 'CW'
 });
 let currentLanguage = loadLanguage();
@@ -55,7 +57,7 @@ function applyTranslations() {
   setText('#add-part', 'addPart'); setText('.master-data-add-grid label:nth-child(5)', 'newMachine'); document.querySelector('.master-data-add-grid label:nth-child(5)').append(document.querySelector('#new-machine-name'));
   setText('#add-machine', 'addMachine');
   setText('#projects-master-title', 'projectList'); setText('#parts-master-title', 'partList'); setText('#machines-master-title', 'machineList');
-  setText('#export-csv', 'exportCsv'); setText('#export-summary', 'exportSummary'); setText('.file-button', 'importCsv');
+  setText('#validate-data', 'validateData'); setText('#export-csv', 'exportCsv'); setText('#export-summary', 'exportSummary'); setText('.file-button', 'importCsv');
   setText('.tab[data-tab="project"]', 'project'); setText('.tab[data-tab="part"]', 'part'); setText('.tab[data-tab="machine"]', 'machine');
   setText('.dashboard-filter-card label:nth-child(1) span', 'projectFilter'); setText('.dashboard-filter-card label:nth-child(2) span', 'partFilter'); setText('.dashboard-filter-card label:nth-child(3) span', 'machineFilter');
   document.querySelector('.dashboard-filter-card label:nth-child(1)').append(projectFilter);
@@ -139,6 +141,8 @@ const entriesBody = document.querySelector('#entries-body');
 const entriesTableHead = document.querySelector('#entries-head');
 const tableOeeToggle = document.querySelector('#table-oee-toggle');
 const importInput = document.querySelector('#import-csv');
+const validateDataButton = document.querySelector('#validate-data');
+const validationResult = document.querySelector('#validation-result');
 const projectInput = document.querySelector('#project');
 const partInput = document.querySelector('#part');
 const machineInput = document.querySelector('#machine');
@@ -183,6 +187,7 @@ if (resetConfirmInput) resetConfirmInput.addEventListener('input', updateResetDi
 if (confirmResetButton) confirmResetButton.addEventListener('click', resetAppData);
 if (cancelResetButton) cancelResetButton.addEventListener('click', closeResetDialog);
 if (resetDialog) resetDialog.addEventListener('cancel', closeResetDialog);
+if (validateDataButton) validateDataButton.addEventListener('click', validateStoredData);
 document.querySelector('#export-csv').addEventListener('click', exportCsv);
 document.querySelector('#export-summary').addEventListener('click', exportManagementSummary);
 importInput.addEventListener('change', importCsv);
@@ -488,6 +493,7 @@ function clearLocalAppState() {
   if (importInput) importInput.value = '';
   showProjectMessage('');
   formError.textContent = '';
+  clearDataValidationResult();
   renderMasterData();
   render();
 }
@@ -506,6 +512,51 @@ function clearMasterDataInputs() {
     if (input) input.value = '';
   });
 }
+
+function validateStoredData() {
+  if (!validationResult) return;
+  const problems = entries.map((entry, index) => {
+    const normalized = normalizeEntry(entry);
+    const messages = collectEntryValidationMessages(normalized);
+    return { entry: normalized, index, messages };
+  }).filter((result) => result.messages.length > 0);
+
+  if (!problems.length) {
+    validationResult.className = 'validation-result validation-result--ok';
+    validationResult.textContent = t('dataValidationOk');
+    return;
+  }
+
+  validationResult.className = 'validation-result validation-result--issues';
+  validationResult.innerHTML = `<strong>${t('dataValidationIssues')}</strong><ul>${problems.map(({ entry, index, messages }) => `<li><span>${entryLabel(entry, index)}</span><ul>${messages.map((message) => `<li>${escapeHtml(message)}</li>`).join('')}</ul></li>`).join('')}</ul>`;
+}
+
+function collectEntryValidationMessages(entry) {
+  const messages = [];
+  if (!entry.project) messages.push(t('validationProjectMissingShort'));
+  if (!entry.part) messages.push(t('validationPartMissingShort'));
+  if (!entry.machine) messages.push(t('validationMachineMissingShort'));
+  if (!Number.isFinite(entry.target) || entry.target <= 0) messages.push(t('validationTargetPositive'));
+  if (!Number.isFinite(entry.produced) || entry.produced < 0) messages.push(t('validationProducedPositive'));
+  if (!Number.isFinite(entry.scrap) || entry.scrap < 0) messages.push(t('validationScrapNonNegative'));
+  if (Number.isFinite(entry.scrap) && Number.isFinite(entry.produced) && entry.scrap > entry.produced) messages.push(t('validationScrapTooHigh'));
+
+  const filledOeeFields = oeeNumberFields.filter((field) => entry[field] !== null);
+  if (filledOeeFields.length > 0 && filledOeeFields.length < oeeNumberFields.length) messages.push(t('validationOeePartial'));
+  return messages;
+}
+
+function entryLabel(entry, index) {
+  const parts = [entry.date || t('noValue'), entry.project || t('noValue'), entry.part || t('noValue'), entry.machine || t('noValue')];
+  return escapeHtml(`${t('entry')} ${index + 1}: ${parts.join(' · ')}`);
+}
+
+function clearDataValidationResult() {
+  if (!validationResult) return;
+  validationResult.className = 'validation-result';
+  validationResult.textContent = '';
+}
+
 function exportCsv() { const csvHeader = currentLanguage === 'en' ? ['Date','Project','Part','Machine','Target quantity per day','Produced quantity','Scrap','Planned production time in minutes','Machine downtime in minutes','Ideal cycle time per part in seconds','Comment'] : CSV_HEADER; const exportRows = entries.filter((e) => (selectedProjectFilter === 'ALL' || e.project === selectedProjectFilter) && (selectedPartFilter === 'ALL' || e.part === selectedPartFilter) && (selectedMachineFilter === 'ALL' || e.machine === selectedMachineFilter)); downloadFile(`produktionsdaten-${today()}.csv`, [csvHeader, ...exportRows.map((e) => [e.date,e.project,e.part,e.machine,e.target,e.produced,e.scrap,e.plannedTime,e.downtime,e.cycleTime,e.comment])].map((r) => r.map(csvEscape).join(';')).join('\n'), 'text/csv;charset=utf-8'); }
 function exportManagementSummary() { downloadFile(`management-zusammenfassung-${today()}.txt`, buildManagementSummary(filteredRows()), 'text/plain;charset=utf-8'); }
 function importCsv(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { const rows = parseCsv(String(reader.result)); const imported = rows.slice(1).filter((r) => r.length >= 7).map((r) => ({ id:createId(), date:r[0] || today(), project:normalizeText(r[1]), part:normalizeText(r[2]), machine:normalizeText(r[3]), target:toNumber(r[4]), produced:toNumber(r[5]), scrap:toNumber(r[6]), plannedTime:toOptionalNumber(r[7]), downtime:toOptionalNumber(r[8]), cycleTime:toOptionalNumber(r[9]), comment:r[10] || 'CSV-Import' })).filter((e) => !validateEntry(e)); imported.forEach((entry) => { entry.project = ensureMasterValue('project', entry.project, true); entry.part = ensureMasterValue('part', entry.part, true); entry.machine = ensureMasterValue('machine', entry.machine, true); }); entries = [...entries, ...imported]; persistEntries(); persistMasterData(); persistDeletedMasterValues(); renderMasterData(); render(); importInput.value = ''; formError.textContent = `${t('importSuccess')} (${imported.length})`; }; reader.readAsText(file, 'utf-8'); }
