@@ -673,3 +673,30 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   .workflow-steps { grid-template-columns: 1fr; }
   .workflow-steps li::after { content: none !important; }
 }
+.validation-result {
+  margin-top: 16px;
+  border-radius: 14px;
+  font-weight: 700;
+}
+.validation-result:empty { display: none; }
+.validation-result--ok,
+.validation-result--issues {
+  padding: 14px 16px;
+  border: 1px solid;
+}
+.validation-result--ok {
+  color: #0f6b3a;
+  border-color: #b9e6c9;
+  background: #effaf3;
+}
+.validation-result--issues {
+  color: #7a3b00;
+  border-color: #f5c26b;
+  background: #fff7e8;
+}
+.validation-result ul {
+  margin: 8px 0 0 18px;
+  padding: 0;
+}
+.validation-result li + li { margin-top: 6px; }
+.validation-result span { font-weight: 800; }
