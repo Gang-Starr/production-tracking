@@ -29,9 +29,9 @@ Die App funktioniert weiterhin vollständig lokal ohne Server, Login oder Datenb
 Diese Felder werden für jeden Eintrag benötigt. Die normale Stückzahlauswertung funktioniert immer, auch wenn keine OEE-Daten erfasst werden:
 
 - Datum
-- Projekt (Auswahl aus dem Projekt-Dropdown)
-- Bauteil (Auswahl aus dem Bauteil-Dropdown)
-- Maschine (Auswahl aus dem Maschinen-Dropdown)
+- Projekt (freie Eingabe oder Auswahl aus vorhandenen lokalen Stammdaten)
+- Bauteil (freie Eingabe oder Auswahl aus vorhandenen lokalen Stammdaten)
+- Maschine (freie Eingabe oder Auswahl aus vorhandenen lokalen Stammdaten)
 - Zielmenge pro Tag (muss größer als 0 sein)
 - Produzierte Stückzahl (muss größer oder gleich 0 sein)
 - Ausschuss (darf nicht größer als die produzierte Stückzahl sein)
@@ -167,21 +167,7 @@ Kopfzeile:
 Datum;Projekt;Bauteil;Maschine;Zielmenge pro Tag;Produzierte Stückzahl;Ausschuss;Geplante Produktionszeit in Minuten;Maschinenstillstand in Minuten;Ideale Taktzeit je Stück in Sekunden;Kommentar
 ```
 
-Beispiel mit OEE-Daten:
-
-```csv
-Datum;Projekt;Bauteil;Maschine;Zielmenge pro Tag;Produzierte Stückzahl;Ausschuss;Geplante Produktionszeit in Minuten;Maschinenstillstand in Minuten;Ideale Taktzeit je Stück in Sekunden;Kommentar
-2026-07-01;Kundenauftrag 2026;Deckel;M-02;1000;980;20;480;35;25;Anlaufprobleme am Morgen
-2026-07-02;Kundenauftrag 2026;Deckel;M-02;1000;1040;10;480;20;25;Stabiler Lauf
-```
-
-Beispiel ohne OEE-Daten:
-
-```csv
-Datum;Projekt;Bauteil;Maschine;Zielmenge pro Tag;Produzierte Stückzahl;Ausschuss;Geplante Produktionszeit in Minuten;Maschinenstillstand in Minuten;Ideale Taktzeit je Stück in Sekunden;Kommentar
-2026-07-03;Serviceauftrag 2026;Dichtung;M-03;800;760;15;;;;OEE-Daten wurden nicht erfasst
-2026-07-04;Serviceauftrag 2026;Dichtung;M-03;800;810;8;;;;Nur Stückzahlen bewertet
-```
+Die README enthält bewusst keine CSV-Beispieldatensätze mit Projekt-, Bauteil- oder Maschinenwerten, damit keine Demo-Stammdaten als Startwerte missverstanden werden. Für einen Import kann eine eigene CSV-Datei mit der oben genannten Kopfzeile und eigenen Produktionswerten verwendet werden.
 
 Beim CSV-Export werden immer alle Spalten ausgegeben. Leere optionale OEE-Felder bleiben in der CSV-Datei leer. Für Einträge ohne vollständige OEE-Daten wird OEE in der App als **„n/a“** dargestellt.
 

@@ -373,8 +373,10 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
 .master-data-card .project-row.archived .project-meta { color: var(--danger); }
 
 .master-empty-state {
+  grid-template-columns: 1fr;
   color: var(--muted);
   font-weight: 700;
+  text-align: center;
   background: #f8fafc;
   border-style: dashed;
 }
