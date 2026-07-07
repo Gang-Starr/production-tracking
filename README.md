@@ -26,7 +26,7 @@ Die App funktioniert weiterhin vollständig lokal ohne Server, Login oder Datenb
 
 ## Info-Button in der App
 
-Direkt im Header der App befindet sich unter der Sprachauswahl ein Info-Button. Auf Deutsch lautet er **„ⓘ Info / Anleitung“**, auf Englisch **“ⓘ Info / Guide”**. Er öffnet ein kompaktes Info-Fenster mit den wichtigsten Nutzungshinweisen, damit Nutzer auch dann ohne zusätzliche Dokumente starten können, wenn sie nur den App-Link erhalten haben.
+Direkt im Header der App befindet sich oberhalb der Sprachauswahl ein Info-Button. Auf Deutsch lautet er **„ⓘ Info / Anleitung“**, auf Englisch **“ⓘ Info / Guide”**. Er öffnet ein kompaktes Info-Fenster mit den wichtigsten Nutzungshinweisen, damit Nutzer auch dann ohne zusätzliche Dokumente starten können, wenn sie nur den App-Link erhalten haben.
 
 Das Info-Fenster erklärt kurz:
 
