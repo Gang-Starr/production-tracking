@@ -156,18 +156,20 @@ button, .file-button {
 }
 button:hover, .file-button:hover { filter: brightness(.97); }
 .info-button {
-  align-self: flex-end;
-  padding: 9px 13px;
+  align-self: stretch;
+  min-height: 48px;
+  padding: 10px 12px;
   border: 1px solid rgba(255,255,255,.65);
   border-radius: 999px;
-  background: rgba(255,255,255,.92);
-  color: #163b73;
+  background: rgba(255,255,255,.18);
+  color: #fff;
   font-size: .92rem;
   font-weight: 800;
-  box-shadow: 0 8px 22px rgba(0,0,0,.16);
+  box-shadow: 0 8px 22px rgba(0,0,0,.18);
+  backdrop-filter: blur(8px);
   white-space: nowrap;
 }
-.info-button:hover { background: #fff; }
+.info-button:hover { background: rgba(255,255,255,.26); }
 .primary-button { background: var(--primary); color: #fff; grid-column: 1 / -1; }
 .primary-button:hover { background: var(--primary-dark); }
 .danger-button { background: #fde8e7; color: var(--danger); }
@@ -548,6 +550,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
 .header-language {
   display: flex;
   justify-content: flex-end;
+  width: 100%;
   min-width: max-content;
 }
 .language-switcher {
@@ -555,6 +558,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   visibility: visible;
   opacity: 1;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
   margin: 0;
   padding: 10px 12px;
@@ -566,6 +570,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   white-space: nowrap;
   box-shadow: 0 8px 22px rgba(0,0,0,.18);
   backdrop-filter: blur(8px);
+  width: 100%;
 }
 .language-switcher select {
   display: inline-block;
@@ -606,7 +611,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
     white-space: normal;
   }
   .header-actions {
-    align-items: flex-start;
+    align-items: stretch;
     margin-left: 0;
     min-width: 0;
     width: 100%;
@@ -617,11 +622,11 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
     width: 100%;
   }
   .info-button {
-    align-self: flex-start;
+    align-self: stretch;
     white-space: normal;
   }
   .language-switcher {
-    align-self: flex-start;
+    align-self: stretch;
     flex-wrap: wrap;
     white-space: normal;
   }

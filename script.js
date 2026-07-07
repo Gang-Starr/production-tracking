@@ -126,6 +126,7 @@ function ensureLanguageSwitcher() {
   wrapper.className = 'header-actions';
   wrapper.setAttribute('aria-label', 'Sprachauswahl und Hilfe');
   wrapper.innerHTML = `
+    <button id="info-button" type="button" class="info-button" data-i18n="infoButton" aria-haspopup="dialog" aria-controls="info-dialog">ⓘ Info / Anleitung</button>
     <div class="header-language" aria-label="Sprachauswahl">
     <label class="language-switcher" for="language-select">
       <span data-i18n="languageLabel">Sprache</span>
@@ -134,8 +135,7 @@ function ensureLanguageSwitcher() {
         <option value="en">English</option>
       </select>
     </label>
-    </div>
-    <button id="info-button" type="button" class="info-button" data-i18n="infoButton" aria-haspopup="dialog" aria-controls="info-dialog">ⓘ Info / Anleitung</button>`;
+    </div>`;
   header.append(wrapper);
   select = wrapper.querySelector('#language-select');
   return select;
