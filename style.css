@@ -1,8 +1,10 @@
 :root {
   --bg: #f3f6fb;
   --card: #ffffff;
-  --text: #1d2733;
-  --muted: #68768a;
+  --text: #2f3b52;
+  --text-strong: #1f2a3d;
+  --muted: #6b778c;
+  --placeholder: #7f8aa3;
   --line: #dce3ed;
   --primary: #1f6feb;
   --primary-dark: #1959bd;
@@ -11,7 +13,7 @@
   --yellow: #f2b705;
   --red: #d93025;
   --shadow: 0 18px 40px rgba(31, 46, 71, 0.10);
-  --select-text: #334155;
+  --select-text: #2f3b52;
 }
 
 * { box-sizing: border-box; }
@@ -38,7 +40,7 @@ body {
   border: 1px solid rgba(163, 179, 199, .95);
   border-radius: 999px;
   background: #f3f6fa;
-  color: #1d2733 !important;
+  color: var(--text-strong) !important;
   font-size: .88rem;
   font-weight: 700;
   line-height: 1.35;
@@ -60,12 +62,12 @@ body {
   padding: 24px;
 }
 .section-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
-h2 { margin: 0 0 14px; font-size: 1.25rem; }
+h2 { margin: 0 0 14px; color: var(--text-strong); font-size: 1.25rem; }
 .section-heading h2 { margin: 0; }
 .storage-note { color: var(--muted); font-size: .9rem; }
 
 .production-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
-label { display: grid; gap: 5px; font-weight: 700; color: #344054; }
+label { display: grid; gap: 5px; font-weight: 700; color: var(--text-strong); }
 input, textarea, button, .file-button {
   font: inherit;
   border-radius: 10px;
@@ -78,6 +80,16 @@ input, textarea {
   color: var(--text);
 }
 input:focus, textarea:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--primary); }
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--placeholder);
+  opacity: 1;
+}
+
+input[type="date"] {
+  color: var(--text);
+}
 .full-width { grid-column: 1 / -1; }
 
 .project-input-group {
@@ -120,7 +132,7 @@ input:focus, textarea:focus { outline: 3px solid rgba(31, 111, 235, .18); border
   justify-content: space-between;
   gap: 12px;
   padding: 11px 14px;
-  color: #315f9f;
+  color: var(--primary-dark);
   font-weight: 800;
   list-style-position: inside;
 }
@@ -135,12 +147,12 @@ input:focus, textarea:focus { outline: 3px solid rgba(31, 111, 235, .18); border
   font-size: .86rem;
 }
 .oee-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 0 14px 14px; }
-.oee-fields label { font-size: .88rem; color: #475467; }
+.oee-fields label { font-size: .88rem; color: var(--text); }
 .oee-fields label span { color: var(--muted); font-weight: 600; font-size: .8rem; }
 .oee-fields input { background: #fff; border-style: dashed; }
 .comment-field .comment-label {
   display: block;
-  color: #344054;
+  color: var(--text-strong);
   font-size: clamp(.9rem, 1.6vw, .98rem);
   line-height: 1.35;
   overflow: hidden;
@@ -157,7 +169,7 @@ button, .file-button {
   border: 0;
   padding: 11px 16px;
   background: #e9eef7;
-  color: #1d2733;
+  color: var(--text-strong);
   font-weight: 700;
   cursor: pointer;
   display: inline-flex;
@@ -187,7 +199,7 @@ button:hover, .file-button:hover { filter: brightness(.97); }
 .file-button input { display: none; }
 .workflow-hint {
   margin: -4px 0 18px;
-  color: #42526b;
+  color: var(--text);
   font-size: .94rem;
   font-weight: 700;
   line-height: 1.35;
@@ -213,7 +225,7 @@ button:hover, .file-button:hover { filter: brightness(.97); }
   border: 1px solid #d7e3f5;
   border-radius: 12px;
   background: rgba(255, 255, 255, .86);
-  color: #243b5a;
+  color: var(--text-strong);
   box-shadow: 0 8px 20px rgba(31, 46, 71, .06);
 }
 .workflow-steps li::before {
@@ -245,10 +257,10 @@ button:hover, .file-button:hover { filter: brightness(.97); }
 .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 20px; }
 .kpi { background: #f7f9fc; border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
 .kpi span { display: block; color: var(--muted); font-size: .9rem; }
-.kpi strong { font-size: 1.7rem; }
+.kpi strong { color: var(--text-strong); font-size: 1.7rem; }
 .kpi strong.na-value, .na-value { color: var(--muted); font-size: 1.05rem; font-weight: 700; white-space: nowrap; line-height: 1; }
 td .na-value { display: inline-block; font-size: .88rem; font-weight: 600; white-space: nowrap; }
-.management-summary { background: #eef5ff; border-left: 5px solid var(--primary); padding: 16px; border-radius: 12px; color: #243b5a; }
+.management-summary { background: #eef5ff; border-left: 5px solid var(--primary); padding: 16px; border-radius: 12px; color: var(--text-strong); }
 
 .summary-list { display: grid; gap: 10px; }
 .summary-item { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fbfcfe; }
@@ -262,8 +274,8 @@ td .na-value { display: inline-block; font-size: .88rem; font-weight: 600; white
 .table-wrapper { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; min-width: 980px; }
 th, td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-th { background: #f6f8fb; color: #344054; font-size: .86rem; white-space: nowrap; }
-td { font-size: .94rem; }
+th { background: #f6f8fb; color: var(--text-strong); font-size: .86rem; white-space: nowrap; }
+td { color: var(--text); font-size: .94rem; }
 .status-dot { width: 16px; height: 16px; border-radius: 999px; display: inline-block; box-shadow: inset 0 0 0 2px rgba(255,255,255,.6); }
 .status-green { background: var(--green); }
 .status-yellow { background: var(--yellow); }
@@ -303,10 +315,11 @@ td { font-size: .94rem; }
   padding: 0 4px;
   color: var(--muted);
 }
-.dashboard-heading h2 { color: var(--text); }
+.dashboard-heading h2 { color: var(--text-strong); }
 .dashboard-grid { width: 100%; margin: 0; }
 .chart-card h3 {
   margin: 0 0 14px;
+  color: var(--text-strong);
   font-size: 1.05rem;
 }
 .chart-card canvas {
@@ -348,7 +361,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
 .project-management summary {
   cursor: pointer;
   padding: 13px 16px;
-  color: #315f9f;
+  color: var(--primary-dark);
   font-weight: 800;
 }
 .project-panel {
@@ -398,7 +411,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   cursor: pointer;
   padding: 12px 14px;
   font-weight: 800;
-  color: #315f9f;
+  color: var(--primary-dark);
 }
 .master-data-panel {
   display: grid;
@@ -407,6 +420,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
 }
 .master-data-panel h3 {
   margin: 4px 0 0;
+  color: var(--text-strong);
   font-size: 1rem;
 }
 .master-data-add-grid {
@@ -435,7 +449,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   padding: 10px 12px;
   border-radius: 10px;
   background: #eef5ff;
-  color: #243b5a;
+  color: var(--text-strong);
   font-weight: 700;
 }
 .dashboard-filter-card {
@@ -469,7 +483,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
 .master-data-management summary {
   cursor: pointer;
   padding: 13px 16px;
-  color: #315f9f;
+  color: var(--primary-dark);
   font-weight: 800;
 }
 .master-data-panel {
@@ -671,7 +685,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   border-bottom: 1px solid var(--line);
   background: linear-gradient(180deg, #f8fbff, #fff);
 }
-.info-dialog-header h2 { margin: 0; color: #163b73; }
+.info-dialog-header h2 { margin: 0; color: var(--primary-dark); }
 .info-close-x {
   width: 36px;
   height: 36px;
@@ -679,7 +693,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   border: 1px solid #cfe0fb;
   border-radius: 50%;
   background: #eef5ff;
-  color: #163b73;
+  color: var(--primary-dark);
   font-size: 1.35rem;
   line-height: 1;
 }
@@ -693,7 +707,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
   border-left: 4px solid var(--primary);
   border-radius: 12px;
   background: #f2f7ff;
-  color: #344054;
+  color: var(--text-strong);
   font-weight: 700;
 }
 .info-section {
@@ -705,7 +719,7 @@ select:focus { outline: 3px solid rgba(31, 111, 235, .18); border-color: var(--p
 }
 .info-section h3 {
   margin: 0 0 8px;
-  color: #163b73;
+  color: var(--primary-dark);
   font-size: 1rem;
 }
 .info-section p, .info-section ol, .info-section ul { margin: 0; }
