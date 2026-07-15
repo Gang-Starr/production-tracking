@@ -305,7 +305,7 @@ td { color: var(--text); font-size: .94rem; }
 .status-yellow { background: var(--yellow); }
 .status-red { background: var(--red); }
 .delete-row { color: var(--danger); background: #fff1f0; padding: 8px 10px; }
-.chart-card canvas { width: 100%; max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.chart-card canvas { width: 100%; max-width: 100%; height: auto; border: 1px solid #e3e8f0; border-radius: 14px; background: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.75); }
 
 @media (max-width: 980px) {
   .layout, .grid-two { grid-template-columns: 1fr; }
@@ -342,14 +342,14 @@ td { color: var(--text); font-size: .94rem; }
 .dashboard-heading h2 { color: var(--text-strong); }
 .dashboard-grid { width: 100%; margin: 0; }
 .chart-card h3 {
-  margin: 0 0 14px;
+  margin: 0 0 10px;
   color: var(--text-strong);
-  font-size: 1.05rem;
+  font-size: 1.03rem;
 }
 .chart-card canvas {
   display: block;
   width: 100%;
-  height: 300px;
+  height: 270px;
 }
 @media (max-width: 640px) {
   .production-form { gap: 14px; }

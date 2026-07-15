@@ -586,26 +586,121 @@ function renderCharts(rows) {
   const buckets = chartRows(rows), labels = buckets.map((d) => d.label);
   const oeeBuckets = buckets.filter((d) => d.hasValidOeeData);
   const oeeLabels = oeeBuckets.map((d) => d.label);
-  drawBarChart(charts.good, labels, [{ label: t('good'), values: buckets.map((d) => d.good), color: '#1f6feb' }]);
-  drawBarChart(charts.target, labels, [{ label: t('targetQty'), values: buckets.map((d) => d.target), color: '#7a869a' }, { label: t('good'), values: buckets.map((d) => d.good), color: '#1f9d55' }]);
-  drawBarChart(charts.scrap, labels, [{ label: t('scrap'), values: buckets.map((d) => d.scrap), color: '#d93025' }]);
+  drawBarChart(charts.good, labels, [{ label: t('good'), values: buckets.map((d) => d.good), color: '#1f6feb' }], { hideLegend: true });
+  drawBarChart(charts.target, labels, [{ label: t('targetQty'), values: buckets.map((d) => d.target), color: '#7a869a' }, { label: t('good'), values: buckets.map((d) => d.good), color: '#1f6feb' }]);
+  drawBarChart(charts.scrap, labels, [{ label: t('scrap'), values: buckets.map((d) => d.scrap), color: '#d93025' }], { hideLegend: true });
   drawBarChart(charts.oee, oeeLabels, [{ label: 'OEE %', values: oeeBuckets.map((d) => d.oee ?? 0), color: '#6f42c1' }], { percent: true, max: 100, emptyMessage: t('noOeeData') });
   drawBarChart(charts.oeeParts, oeeLabels, [{ label: t('availability'), values: oeeBuckets.map((d) => d.availability ?? 0), color: '#1f6feb' }, { label: t('performance'), values: oeeBuckets.map((d) => d.performance ?? 0), color: '#f2b705' }, { label: t('quality'), values: oeeBuckets.map((d) => d.quality ?? 0), color: '#1f9d55' }], { percent: true, max: 100, emptyMessage: t('noOeeData') });
-  let cumulative = 0; drawBarChart(charts.cumulative, labels, [{ label: t('cumulativeDeviation'), values: buckets.map((d) => { cumulative += d.deviation; return cumulative; }), color: '#0f766e' }], { allowNegative: true });
+  let cumulative = 0; drawLineChart(charts.cumulative, labels, { label: t('cumulativeDeviation'), values: buckets.map((d) => { cumulative += d.deviation; return cumulative; }), color: '#0f766e' }, { allowNegative: true });
+}
+
+function chartNumber(value, percent = false) { return percent ? formatPercent(value) : formatInteger(Math.round(value)); }
+
+function chartLayout(canvas, labels, series, options = {}) {
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = Math.max(360, Math.floor(rect.width || canvas.width));
+  canvas.height = window.matchMedia('(max-width: 640px)').matches ? 260 : 270;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const legendHeight = options.hideLegend ? 0 : 28;
+  const p = { l: 62, r: 22, t: 24 + legendHeight, b: 50 };
+  const w = canvas.width - p.l - p.r;
+  const h = canvas.height - p.t - p.b;
+  const values = series.flatMap((s) => s.values.map((v) => Number(v) || 0));
+  const min = options.allowNegative ? Math.min(0, ...values) : 0;
+  const max = Math.max(options.max || 1, ...values, 1);
+  const pad = (max - min || max || 1) * 0.12;
+  const domainMin = options.allowNegative ? Math.min(0, min - pad) : 0;
+  const domainMax = Math.max(options.max || 1, max + (options.max ? 0 : pad));
+  const span = domainMax - domainMin || 1;
+  const zeroY = p.t + h - ((0 - domainMin) / span) * h;
+  return { ctx, p, w, h, min: domainMin, max: domainMax, span, zeroY };
+}
+
+function drawChartFrame(ctx, layout, options = {}) {
+  const { p, w, h, min, max, span, zeroY } = layout;
+  ctx.strokeStyle = '#d6deea';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, p.t + h); ctx.lineTo(p.l + w, p.t + h); ctx.stroke();
+  for (let i = 0; i <= 4; i++) {
+    const y = p.t + (h / 4) * i;
+    const val = max - (span / 4) * i;
+    ctx.fillStyle = '#667085'; ctx.font = '12px Arial'; ctx.textAlign = 'right';
+    ctx.fillText(chartNumber(val, options.percent), p.l - 10, y + 4);
+    ctx.strokeStyle = '#eef2f7'; ctx.beginPath(); ctx.moveTo(p.l, y); ctx.lineTo(p.l + w, y); ctx.stroke();
+  }
+  if (options.allowNegative) {
+    ctx.strokeStyle = '#b8c2d0'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(p.l, zeroY); ctx.lineTo(p.l + w, zeroY); ctx.stroke();
+  }
+}
+
+function drawAxisLabels(ctx, labels, layout) {
+  const { p, w } = layout;
+  const groupW = w / labels.length;
+  const labelStep = Math.max(1, Math.ceil(labels.length / Math.max(4, Math.floor(w / 86))));
+  labels.forEach((label, i) => {
+    if (!(i % labelStep === 0 || labels.length <= 10 || i === labels.length - 1)) return;
+    ctx.save(); ctx.translate(p.l + i * groupW + groupW / 2, p.t + layout.h + 32);
+    ctx.rotate(labels.length > 6 ? -0.42 : 0); ctx.fillStyle = '#667085'; ctx.font = '12px Arial'; ctx.textAlign = labels.length > 6 ? 'right' : 'center';
+    ctx.fillText(label, 0, 0); ctx.restore();
+  });
+}
+
+function drawLegend(ctx, series, layout, options = {}) {
+  if (options.hideLegend) return;
+  series.forEach((s, i) => { const x = layout.p.l + i * 150; ctx.fillStyle = s.color; ctx.fillRect(x, 16, 12, 12); ctx.fillStyle = '#344054'; ctx.font = '12px Arial'; ctx.textAlign = 'left'; ctx.fillText(s.label, x + 18, 26); });
+}
+
+function drawDataLabel(ctx, text, x, y, value) {
+  ctx.fillStyle = '#344054'; ctx.font = 'bold 11px Arial'; ctx.textAlign = 'center';
+  ctx.fillText(text, x, y + (value < 0 ? 14 : -6));
+}
+
+function attachChartTooltip(canvas, points) {
+  canvas.onmousemove = (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (event.clientX - rect.left) * scaleX;
+    const y = (event.clientY - rect.top) * scaleY;
+    const nearest = points.find((p) => Math.abs(p.x - x) <= p.hit && Math.abs(p.y - y) <= p.hit);
+    canvas.title = nearest ? `${nearest.label}: ${nearest.series} ${nearest.value}` : '';
+  };
+  canvas.onmouseleave = () => { canvas.title = ''; };
 }
 
 function drawBarChart(canvas, labels, series, options = {}) {
-  const rect = canvas.getBoundingClientRect(); canvas.width = Math.max(360, Math.floor(rect.width || canvas.width)); canvas.height = 300;
-  const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  if (!canvas) return;
+  const layout = chartLayout(canvas, labels, series, options), { ctx, p, w, h, span, zeroY } = layout;
   if (!labels.length) { ctx.fillStyle = '#6b778c'; ctx.font = '14px Arial'; ctx.fillText(options.emptyMessage || t('noData'), 24, 52); return; }
-  const p = { l: 54, r: 18, t: 48, b: 58 }, w = canvas.width - p.l - p.r, h = canvas.height - p.t - p.b;
-  const values = series.flatMap((s) => s.values.map((v) => Number(v) || 0)); const min = options.allowNegative ? Math.min(0, ...values) : 0; const max = Math.max(options.max || 1, ...values, 1); const span = max - min || 1; const zeroY = p.t + h - ((0 - min) / span) * h;
-  ctx.strokeStyle = '#dce3ed'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(p.l, p.t); ctx.lineTo(p.l, p.t + h); ctx.lineTo(p.l + w, p.t + h); ctx.stroke();
-  for (let i = 0; i <= 4; i++) { const y = p.t + (h / 4) * i; const val = max - (span / 4) * i; ctx.fillStyle = '#6b778c'; ctx.font = '11px Arial'; ctx.fillText(options.percent ? formatPercent(val) : formatInteger(Math.round(val)), 8, y + 4); ctx.strokeStyle = '#eef2f7'; ctx.beginPath(); ctx.moveTo(p.l, y); ctx.lineTo(p.l + w, y); ctx.stroke(); }
-  const groupW = w / labels.length, barW = Math.max(6, Math.min(34, (groupW - 12) / series.length));
-  const labelStep = Math.max(1, Math.ceil(labels.length / Math.max(4, Math.floor(w / 72))));
-  labels.forEach((label, i) => { series.forEach((s, si) => { const value = Number(s.values[i]) || 0; const barH = Math.abs(value / span) * h; const x = p.l + i * groupW + (groupW - barW * series.length) / 2 + si * barW; const y = value >= 0 ? zeroY - barH : zeroY; ctx.fillStyle = s.color; ctx.fillRect(x, y, Math.max(2, barW - 2), Math.max(1, barH)); }); if (i % labelStep === 0 || labels.length <= 10 || i === labels.length - 1) { ctx.save(); ctx.translate(p.l + i * groupW + groupW / 2, canvas.height - 17); ctx.rotate(labels.length > 6 ? -0.45 : 0); ctx.fillStyle = '#6b778c'; ctx.font = '11px Arial'; ctx.fillText(label, labels.length > 6 ? -26 : -18, 0); ctx.restore(); } });
-  series.forEach((s, i) => { ctx.fillStyle = s.color; ctx.fillRect(p.l + i * 145, 16, 13, 13); ctx.fillStyle = '#2f3b52'; ctx.font = '12px Arial'; ctx.fillText(s.label, p.l + 18 + i * 145, 27); });
+  drawLegend(ctx, series, layout, options); drawChartFrame(ctx, layout, options);
+  const groupW = w / labels.length, barW = Math.max(10, Math.min(42, (groupW * 0.72) / series.length));
+  const points = [];
+  labels.forEach((label, i) => {
+    series.forEach((s, si) => {
+      const value = Number(s.values[i]) || 0; const barH = Math.abs(value / span) * h;
+      const x = p.l + i * groupW + (groupW - barW * series.length) / 2 + si * barW;
+      const y = value >= 0 ? zeroY - barH : zeroY;
+      ctx.fillStyle = s.color; ctx.fillRect(x, y, Math.max(4, barW - 3), Math.max(1, barH));
+      if (labels.length <= 18 || i % Math.ceil(labels.length / 18) === 0) drawDataLabel(ctx, chartNumber(value, options.percent), x + barW / 2, value >= 0 ? y : y + barH, value);
+      points.push({ x: x + barW / 2, y: value >= 0 ? y : y + barH, hit: Math.max(12, barW), label, series: s.label, value: chartNumber(value, options.percent) });
+    });
+  });
+  drawAxisLabels(ctx, labels, layout); attachChartTooltip(canvas, points);
+}
+
+function drawLineChart(canvas, labels, series, options = {}) {
+  if (!canvas) return;
+  const layout = chartLayout(canvas, labels, [series], { ...options, hideLegend: true }), { ctx, p, w, h, min, span } = layout;
+  if (!labels.length) { ctx.fillStyle = '#6b778c'; ctx.font = '14px Arial'; ctx.fillText(options.emptyMessage || t('noData'), 24, 52); return; }
+  drawChartFrame(ctx, layout, options);
+  const step = labels.length > 1 ? w / (labels.length - 1) : w;
+  const points = labels.map((label, i) => { const value = Number(series.values[i]) || 0; return { label, series: series.label, value, x: p.l + (labels.length > 1 ? i * step : w / 2), y: p.t + h - ((value - min) / span) * h }; });
+  ctx.strokeStyle = series.color; ctx.lineWidth = 2.5; ctx.beginPath(); points.forEach((point, i) => i ? ctx.lineTo(point.x, point.y) : ctx.moveTo(point.x, point.y)); ctx.stroke();
+  points.forEach((point, i) => { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(point.x, point.y, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = series.color; ctx.lineWidth = 2; ctx.stroke(); if (labels.length <= 18 || i % Math.ceil(labels.length / 18) === 0) drawDataLabel(ctx, chartNumber(point.value), point.x, point.y, point.value); });
+  drawAxisLabels(ctx, labels, layout); attachChartTooltip(canvas, points.map((p) => ({ ...p, hit: 14, value: chartNumber(p.value) })));
 }
 
 function dailyRows(rows) { return Object.entries(groupBy(rows, 'date')).sort(([a], [b]) => a.localeCompare(b)).map(([date, items]) => ({ date, label: formatDate(date), ...aggregate(items), count: items.length, hasValidOeeData: items.some((r) => r.hasValidOeeData) })); }
